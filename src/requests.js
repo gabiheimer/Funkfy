@@ -38,5 +38,13 @@ export async function searchSpotifySong(trackInfo) {
     }
 
     const response = await axios.get(query, headers);
-    console.log(response);
+    return response.data.tracks.total ? response.data.tracks.items[0] : null;
+}
+
+export async function searchSpotifyAudioFeatures(trackId) {
+    const token = await getToken();
+    const headers = {headers: {"Authorization": `Bearer ${token}`}}
+    
+    const response = await axios.get(`https://api.spotify.com/v1/audio-features/${trackId}`, headers);
+    return response.data;
 }
