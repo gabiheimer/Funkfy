@@ -1,28 +1,34 @@
 import './App.css';
 import React, { useState } from 'react';
-import { searchSpotifySong } from './requests';
 
 export default function App() {
-  const [track, setTrack] = useState({song: '', artist: ''})
+  const [song, setSong] = useState('');
+  const coiso = new FileReader();
 
-  function onChange(evt) {
-    setTrack({...track, [evt.target.name]: evt.target.value});
-  }
+  console.log('coiso:')
+  console.log(coiso);
 
-  function handleSubmit(evt) {
-    evt.preventDefault();
-    searchSpotifySong(track);
-    setTrack({song: '', artist: ''});
+  function handleChange(e) {
+    var target = e.currentTarget;
+    var file = target.files[0];
+    var reader = new FileReader();
+    
+    if (target.files && file) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        setSong(e.target.result);
+      }
+      reader.readAsDataURL(file);
+    }
   }
 
   return (
     <div className="App">
       <h1>QUERO PASSINHO!</h1>
-      <form onSubmit={handleSubmit}>
-        <input type='text' name='song' placeholder='song name' onChange={onChange} value={track.song}/>
-        <input type='text' name='artist' placeholder='artist' onChange={onChange} value={track.artist}/>
-        <button type='submit' >search</button>
+      <form>
+        <input type='file'  accept='audio/' onChange={handleChange}/>
       </form>
+      <audio src={song} controls />
     </div>
   );
 }
