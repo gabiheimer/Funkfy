@@ -10,9 +10,7 @@ export default function App() {
 
   function handleChange(e) {
     var target = e.currentTarget;
-    var file = target.files[0];
-    var reader = new FileReader();
-    
+    var file = target.files[0];    
     if (target.files && file) {
       var reader = new FileReader();
       reader.onload = function (e) {
