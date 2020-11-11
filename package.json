@@ -12,6 +12,7 @@
     "react-dom": "^17.0.1",
     "react-native-track-player": "^1.2.3",
     "react-scripts": "4.0.0",
+    "tone": "^14.7.58",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
