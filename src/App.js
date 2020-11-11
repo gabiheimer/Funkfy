@@ -1,10 +1,14 @@
 import './App.css';
 import React, { useState } from 'react';
 import { searchSpotifySong, searchSpotifyAudioFeatures } from './requests';
+import Crunker from 'crunker/src/crunker';
 
 export default function App() {
   const [songFile, setSongFile] = useState('');
   const [spotifyTrack, setSpotifyTrack] = useState({song: '', artist: ''});
+
+  let audio = new Crunker();
+  const file1 = require('./audio/funk.mp3');
 
   function onTrackChange(evt) {
     setSpotifyTrack({...spotifyTrack, [evt.target.name]: evt.target.value});
@@ -35,6 +39,17 @@ export default function App() {
     }
   }
 
+  async function mergeee() {
+    audio
+      .fetchAudio(file1.default, songFile)
+      .then(buffers => audio.mergeAudio(buffers))
+      .then(merged => audio.export(merged, "audio/mp3"))
+      .then(output => audio.download(output.blob))
+      .catch(error => {
+        throw new Error(error);
+      });
+  }
+
   return (
     <div className="App">
       <h1>QUERO PASSINHO!</h1>
@@ -45,6 +60,7 @@ export default function App() {
         <button type='submit' >search</button>
       </form>
       <audio src={songFile} controls />
+      <button onClick={mergeee} >teste do merge de audio</button>
     </div>
   );
 }
