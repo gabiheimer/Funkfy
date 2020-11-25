@@ -1,17 +1,19 @@
 version: '3.7'
 services:
-  # gateway:
-  #   build: 
-  #     context: ./api
-  #   volumes:
-  #     - ./gateway:/gateway
-  # merge:
-  #   build: 
-  #     context: ./merge-api
-  #   volumes:
-  #     - ./merge:/merge
-  #   depends_on:
-  #     - rabbitmq
+  api:
+    build: 
+      context: ./api
+      dockerfile: zsh.Dockerfile
+    volumes:
+      - ./app:/app
+  merge:
+    build: 
+      context: ./merge
+      dockerfile: zsh.Dockerfile
+    volumes:
+      - ./merge:/merge
+    depends_on:
+      - rabbitmq
   processor:
     build: 
       context: ./processor
@@ -20,15 +22,22 @@ services:
       - ./processor:/processor
     depends_on:
       - rabbitmq
-      # - merge
-  # spleeter:
-  #   build: 
-  #     context: ./spleeter
-  #     dockerfile: zsh.Dockerfile
-  #   volumes:
-  #     - ./spleeter:/spleeter
-  #   depends_on:
-  #     - rabbitmq
+  spleeter:
+    build: 
+      context: ./spleeter
+      dockerfile: zsh.Dockerfile
+    volumes:
+      - ./spleeter:/spleeter
+    depends_on:
+      - rabbitmq
+  song-api:
+    build: 
+      context: ./song-api
+      dockerfile: zsh.Dockerfile
+    volumes:
+      - song-api:/song-api
+    depends_on:
+      - rabbitmq
   rabbitmq:
     image: rabbitmq:3.8-management-alpine
     ports:
@@ -37,4 +46,4 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq
 volumes:
   rabbitmq-data:
-  
+  song-api:
