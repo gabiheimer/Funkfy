@@ -1,5 +1,6 @@
-from flask import Flask
-from pydub import AudioSegment
+from flask import Flask, request
+from pydub import AudioSegment, effects
+import os
 
 app = Flask(__name__)
 
@@ -9,11 +10,26 @@ def main():
       'message': 'Hellou world!'
     }
 
-@app.route("/audio")
+@app.route("/song/merge", methods=['PATCH'])
 def audio():
-  sound1 = AudioSegment.from_file("/app/acucar-de-melancia-mto-doido copy.mp3")
-  sound2 = AudioSegment.from_file("/app/teste.mp3")
+  body = request.json
+  vocals = body['vocals']
+  accompaniment = body['accompaniment']
+  sound1 =  speedup(AudioSegment.from_file('/app/api/output/' + vocals + '/vocals.wav'))
+  sound2 = AudioSegment.from_file('/app/api/output/' + accompaniment + '/accompaniment.wav')
 
   combined = sound1.overlay(sound2)
 
-  combined.export("/app/combined.wav", format='wav')
+  combined.export('/app/api/merged/' + vocals + '-' + accompaniment + '.mp3', format='mp3')
+  return {
+    'status': 'Created :D'
+  }
+
+@app.route('/song/split', methods=['PATCH'])
+def split_song():
+  body = request.json
+  song_title = body['title']
+  stems = body['stems']
+
+  os.system('spleeter separate -i /app/api/audio/' + song_title + ' -p spleeter:' + str(stems) + 'stems -o /app/api/output')
+  return {}
