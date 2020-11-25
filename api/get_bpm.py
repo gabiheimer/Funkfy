@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 
 # 2. Load the audio as a waveform y
 #    Store the sampling rate as sr
-y, sr = librosa.load('./output/watermelon-sugar/vocals.wav')
+y, sr = librosa.load('./output/recairei/vocals.wav')
 y2, sr2 = librosa.load('./output/funk/accompaniment.wav')
-y3, sr3 = librosa.load('./audio/watermelon-sugar.mp3')
+y3, sr3 = librosa.load('./audio/recairei.mp3')
 y4, sr4 = librosa.load('./audio/funk.mp3')
 
 # 3. Run the default beat tracker

@@ -3,7 +3,8 @@ import librosa
 import librosa.display
 import numpy as np
 # Compute local onset autocorrelation
-y, sr = librosa.load('./output/funk/accompaniment.wav', duration=30)
+# y, sr = librosa.load('./output/funk/accompaniment.wav', duration=60)
+y, sr = librosa.load('./ws-a.mp3', duration=60)
 hop_length = 512
 oenv = librosa.onset.onset_strength(y=y, sr=sr, hop_length=hop_length)
 tempogram = librosa.feature.tempogram(onset_envelope=oenv, sr=sr,
@@ -22,7 +23,8 @@ ax.plot(times, oenv, label='Onset strength')
 ax.label_outer()
 ax.legend(frameon=True)
 
-y, sr = librosa.load('./output/watermelon-sugar/vocals.wav', duration=30)
+# y, sr = librosa.load('./output/recairei/vocals.wav', duration=60)
+y, sr = librosa.load('./ws-v.mp3', duration=60)
 hop_length = 512
 oenv = librosa.onset.onset_strength(y=y, sr=sr, hop_length=hop_length)
 tempogram = librosa.feature.tempogram(onset_envelope=oenv, sr=sr,
