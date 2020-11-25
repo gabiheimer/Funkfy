@@ -15,8 +15,8 @@ def audio():
   body = request.json
   vocals = body['vocals']
   accompaniment = body['accompaniment']
-  sound1 =  speedup(AudioSegment.from_file('/app/api/output/' + vocals + '/vocals.wav'))
-  sound2 = AudioSegment.from_file('/app/api/output/' + accompaniment + '/accompaniment.wav')
+  sound1 =  AudioSegment.from_file('/app/api/output/' + vocals + '/vocals.wav')
+  sound2 = AudioSegment.from_file('/app/api/output/' + accompaniment + '/accompaniment.wav') - 8
 
   combined = sound1.overlay(sound2)
 
