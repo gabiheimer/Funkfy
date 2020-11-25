@@ -7,4 +7,4 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY . .
 ENTRYPOINT [ "python" ]
-CMD [ "consumer.py" ]
+CMD [ "spleeter_consumer.py" ]
