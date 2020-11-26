@@ -3,16 +3,17 @@ import requests, os
 
 PATH_TO_AUDIO = '/spleeter/audio/'
 PATH_TO_AUDIO_OUTPUT = '/spleeter/audio/output/'
+PORT = ':5060'
 
 def send_to_songs_api(vocals_path, accompaniment_path, music_name):
     """send vocals and accompaniment to songs_api"""
 
-    url = f"song-api/songs/{music_name}/accompaniment"
+    url = f"song-api/songs/{music_name}/accompaniment" + PORT
     data = open(accompaniment_path, 'rb')   
     headers = {'content-type': 'audio/mp3'}
     r = requests.post(url, data=data, headers=headers)
 
-    url = f"song-api/songs/{music_name}/vocals"
+    url = f"song-api/songs/{music_name}/vocals" + PORT
     data = open(vocals_path, 'rb')
     headers = {'content-type': 'audio/mp3'}
     r = requests.post(url, data=data, headers=headers)
@@ -20,7 +21,7 @@ def send_to_songs_api(vocals_path, accompaniment_path, music_name):
 def get_music_from_songs_api(PATH_TO_AUDIO, music_name):
     """get entire music from songs api"""
 
-    url = f"song-api/songs/{music_name}"
+    url = f"song-api/songs/{music_name}" + PORT
     r = requests.get(url, data=None, headers=None)
     
     #TODO: possivel erro abaixo
