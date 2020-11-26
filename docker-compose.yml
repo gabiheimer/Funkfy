@@ -4,6 +4,8 @@ services:
     build: 
       context: ./api
       dockerfile: zsh.Dockerfile
+    ports:
+      - 5000:5000
   merge:
     build: 
       context: ./merge
@@ -28,8 +30,10 @@ services:
     build: 
       context: ./song-api
       dockerfile: zsh.Dockerfile
+    ports:
+      - 5065:5065
     volumes:
-      - song-api:/song-api
+      - ./song-api/files:/song-api/files/
     depends_on:
       - rabbitmq
   rabbitmq:

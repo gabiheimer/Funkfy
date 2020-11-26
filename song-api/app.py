@@ -3,15 +3,15 @@ import os
 
 app = Flask(__name__)
 
-@app.route('/songs/<vocals>/<accompaniment>', methods=['GET'])
-def get_song_result(vocals, accompaniment):
-  song = open('/song-api/graphs/' + vocals + accompaniment + '.jpeg', 'rb')
-  return Response(song, mimetype='image/jpeg')
+@app.route('/graphs/<vocals>/<accompaniment>', methods=['GET'])
+def get_graphs_result(vocals, accompaniment):
+  song = open('/song-api/files/graphs/' + vocals.replace('.mp3','') + accompaniment + '.png', 'rb')
+  return Response(song, mimetype='image/png')
 
 @app.route('/graphs/<vocals>/<accompaniment>', methods=['POST'])
-def receive_song_result(vocals, accompaniment):
+def receive_graphs_result(vocals, accompaniment):
   song = request.data
-  newFile = open("/song-api/graphs/" + vocals + accompaniment + '.jpeg', "wb")
+  newFile = open("/song-api/files/graphs/" + vocals.replace('.mp3','') + accompaniment + '.jpeg', "wb")
   newFile.write(song)
   return('', 201)
 
@@ -32,13 +32,20 @@ def get_song_accompaniment(title):
 
 @app.route('/songs/<vocals>/<accompaniment>', methods=['GET'])
 def get_song_result(vocals, accompaniment):
-  song = open('/song-api/songs/' + vocals + accompaniment, 'rb')
+  song = open('/song-api/files/songs/' + vocals.replace('.mp3','') + accompaniment, 'rb')
   return Response(song, mimetype='audio/mp3')
 
-@app.route('/songs/<title>', methods=['POST'])
-def receive_song(title):
-  song = request.data
-  return save_song(song, title, 'song')
+@app.route('/songs', methods=['POST'])
+def receive_song():
+  vocals = request.files['vocals']
+  accompaniment_file = request.files['accompaniment']
+  vocals_path = "/song-api/files/" + vocals.filename.replace('.mp3','') + "/song.mp3"
+  accompaniment_path = "/song-api/files/" + accompaniment_file.filename.replace('.mp3','') + "/song.mp3"
+  os.makedirs(os.path.dirname(vocals_path), exist_ok=True)
+  os.makedirs(os.path.dirname(accompaniment_path), exist_ok=True)
+  vocals.save(vocals_path)
+  accompaniment_file.save(accompaniment_path)
+  return Response('', 201)
 
 @app.route('/songs/<title>/vocals', methods=['POST'])
 def receive_song_vocals(title):
@@ -53,14 +60,18 @@ def receive_song_accompaniment(title):
 @app.route('/songs/<vocals>/<accompaniment>', methods=['POST'])
 def receive_song_result(vocals, accompaniment):
   song = request.data
-  newFile = open("/song-api/songs/" + vocals + accompaniment, "wb")
+  filename = "/song-api/files/songs/" + vocals.replace('.mp3','') + accompaniment
+  newFile = open(filename, "wb")
   newFile.write(song)
   return('', 201)
 
 def save_song(song, title, part):
-  newFile = open("/song-api/" + title + "/" + part + ".mp3", "wb")
+  filename = "/song-api/files/" + title.replace('.mp3','') + "/" + part + ".mp3"
+  os.makedirs(os.path.dirname(filename), exist_ok=True)
+  newFile = open(filename, "wb")
   newFile.write(song)
   return('', 201)
 
 def open_song(title, part):
-  return open('/song-api/' + title + '/' + part + '.mp3', 'rb')
+  filename = '/song-api/files/' + title.replace('.mp3','') + '/' + part + '.mp3'
+  return open(filename, 'rb')
