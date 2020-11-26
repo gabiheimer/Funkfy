@@ -1,6 +1,8 @@
 import './App.css';
 import React, {useState, useEffect} from 'react';
 import { post } from 'axios';
+import Lottie from 'react-lottie';
+import NoteMusic from './components/note_music.json'
 
 import Dropzone from 'react-dropzone';
 
@@ -12,6 +14,8 @@ export default function App() {
 
   const [returnApi, setReturnAPI] = useState(true)
   const [returnApiGraphics, setReturnAPIGraphics] = useState(true)
+
+  const [loading, setLoading] = useState(true)
 
   const [askingGraphics, setAskingGraphics] = useState(false)
   const [askingMerge, setAskingMerge] = useState(false)
@@ -66,10 +70,26 @@ export default function App() {
     }
   }, [askingMerge])
 
+  const defaultOptions = {
+    loop: true,
+    autoplay: true, 
+    animationData: NoteMusic,
+    rendererSettings: {
+      preserveAspectRatio: 'xMidYMid slice'
+    },
+  };
 
   return (
-    <div style={{backgroundColor: '#33cc99', display: 'flex', flexDirection: 'column', alignItems: 'center', height: '130vh'}} className="App">
-      <h1 style={{display: 'flex', fontFamily: 'Viga' }}>FUNKFY</h1>
+    <div style={{backgroundColor: '#38c172', display: 'flex', flexDirection: 'column', alignItems: 'center', maxHeight: '150vh', minHeight: '100vh'}} className="App">
+      <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+        <h1 style={{display: 'flex', fontFamily: 'Viga', paddingLeft: '25%', paddingRight: '100%', justifyContent: 'center' }}>FUNKFY</h1>
+        <div>
+          <Lottie options={defaultOptions}
+            height={120}
+            width={120}
+          />
+        </div>
+      </div>
 
       <div style={{display: 'flex', flexDirection: 'row'}}>
         <div style={{display: 'flex', flexDirection: 'column', borderWidth: '1.5px', borderStyle: 'dashed', borderColor: '#000', padding: '15px', marginRight: '10px', alignItems: 'center', justifyContent: 'center'}}>
@@ -96,7 +116,7 @@ export default function App() {
               <section>
                 <div {...getRootProps()}>
                     <input {...getInputProps()} />
-                    <p>Insira o arquivo .mp3 para voz aqui, <br/>ou clique para selecionar o arquivo</p>
+                    <p>Insira o arquivo .mp3 para batida aqui, <br/>ou clique para selecionar o arquivo</p>
                   </div>
                 </section>
               )}
@@ -135,6 +155,10 @@ export default function App() {
                 <input type="number" id="quantity" step="0.01" name="quantity" min="-1000" max="1000"></input>
               </div>
             </div>
+
+            <div style={{display: 'flex', alignItems: 'flex-end' }}>
+              <button type="button" style={{fontSize: '16px', backgroundColor: '#cccccc', cursor: 'pointer'}}>Aplicar</button>
+            </div>
           </div>
         )}
       </div>
@@ -147,7 +171,7 @@ export default function App() {
             
       {returnApi && (
         <div style={{padding: '30px'}}>
-          <button type="button" style={{fontSize: '24px', backgroundColor: '#f44336'}}>MERGEEEE!</button>
+          <button type="button" style={{fontSize: '24px', backgroundColor: '#f44336', cursor: 'pointer'}}>MERGEEEE!</button>
         </div>
       )}
     </div>
