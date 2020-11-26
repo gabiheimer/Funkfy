@@ -229,7 +229,7 @@ export default function App() {
       <div style={{minWidth: '70%'}}>
         <h3 style={{textAlign: 'left'}}>Gráfico:</h3>
         {returnApiGraphics === false && (<div>Esperando api para continuar ...</div>)}
-        {returnApiGraphics && (<img key={Date.now()} src={'/graphs/' + fileVoice[0].name + '/' + fileBeat[0].name} alt="Graphics" width="100%" height="300"></img>)}
+        {returnApiGraphics && (<img key={Date.now()} src={'http://funkfy-api.dikastis.com.br/graphs/' + fileVoice[0].name + '/' + fileBeat[0].name} alt="Graphics" width="100%" height="300"></img>)}
         {/*returnApiGraphics && (<img src={url + '/graphs/' + fileVoice[0].name + '/' + fileBeat[0].name + '?' + new Date()} alt="Graphics" width="100%" height="300"></img>)*/}
       </div>
             

@@ -81,9 +81,12 @@ def receive_song_result(vocals, accompaniment):
   song = request.data
   filename = "/song-api/files/songs/" + vocals.replace('.mp3','') + accompaniment.replace('.mp3','')
   os.makedirs(os.path.dirname(filename), exist_ok=True)
-  newFile = open(filename, "wb")
-  newFile.write(song)
-  return('', 201)
+  my_file = Path(filename)
+  if my_file.is_file():
+    newFile = open(filename, "wb")
+    newFile.write(song)
+    return('', 201)
+  return ('', 404)
 
 def save_song(song, title, part):
   filename = "/song-api/files/" + title.replace('.mp3','') + "/" + part + ".mp3"
