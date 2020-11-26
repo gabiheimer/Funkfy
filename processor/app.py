@@ -7,8 +7,7 @@ from IPython.display import Audio
 import warnings
 
 # global vars
-baseUrl = 'song-api'
-port = ':5060'
+baseUrl = 'http://song-api:5060'
 songType = '.mp3'
 
 def getVocalsUrl(songName):
@@ -21,12 +20,12 @@ def postGraphUrl(vocalsName, beatsName):
     return '/graphs/{}/{}'.format(vocalsName, beatsName)
 
 def getVocals(songName):
-    vocalsUrl = baseUrl + getVocalsUrl(songName) + port
+    vocalsUrl = baseUrl + getVocalsUrl(songName) 
     response = requests.get(vocalsUrl)
     return response.data
 
 def getBeats(songName):
-    beatsUrl = baseUrl + getBeatsUrl(songName) + port
+    beatsUrl = baseUrl + getBeatsUrl(songName) 
     response = requests.get(beatsUrl)
     return response.data
 

@@ -20,12 +20,14 @@ services:
       dockerfile: zsh.Dockerfile
     depends_on:
       - rabbitmq
+    restart: always
   spleeter:
     build: 
       context: ./spleeter
       dockerfile: zsh.Dockerfile
     depends_on:
       - rabbitmq
+    restart: always
   song-api:
     build: 
       context: ./song-api
