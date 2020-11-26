@@ -10,12 +10,9 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route("/")
-def main():
-    return {
-        'message': 'Hellou world!'
-    }
-
+@app.route("/", methods=["GET"])
+def hello():
+	return Response('dale', 200)
 
 @app.route("/songs", methods=["POST"])
 def upload_songs():
@@ -68,10 +65,10 @@ def get_graph():
 
 
 @app.route("/result", methods=["get"])
-def get_graph():
+def get_result():
     url = "http://song-api:5065/graphs"  # CHECK URL
     r = requests.get(url, body=request.body, headers=request.headers)
-    return r
+    return r.content
 
 
 @app.route("/song/merge", methods=['PATCH'])
@@ -83,7 +80,7 @@ def audio():
     accompaniment_file = body['accompaniment_file']
     sound1 = AudioSegment.from_file('/app/api/output/' + vocals + vocals_file)
     sound2 = AudioSegment.from_file(
-        '/app/api/output/' + accompaniment + accompaniment_file) - 20+
+        '/app/api/output/' + accompaniment + accompaniment_file) - 20
 
     combined = sound1.overlay(sound2)
 

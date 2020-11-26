@@ -3,9 +3,9 @@ services:
   api:
     build: 
       context: ./api
-      dockerfile: zsh.Dockerfile
+      dockerfile: Dockerfile
     ports:
-      - 5000:5000
+      - 5020:5020
   merge:
     build: 
       context: ./merge
@@ -40,6 +40,16 @@ services:
       - ./song-api/files:/song-api/files/
     depends_on:
       - rabbitmq
+  # web-app:
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ./web-app
+  #   stdin_open: true
+  #   volumes:
+  #     - ./web-app/src:/app/src
+  #     - ./web-app/public:/app/public
+  #   ports:
+  #     - 80:3000
   rabbitmq:
     image: rabbitmq:3.8-management-alpine
     ports:
