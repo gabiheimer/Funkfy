@@ -6,12 +6,14 @@ services:
       dockerfile: Dockerfile
     ports:
       - 5020:5020
+    restart: always
   merge:
     build: 
       context: ./merge
       dockerfile: zsh.Dockerfile
     depends_on:
       - rabbitmq
+    restart: always
   processor:
     build: 
       context: ./processor
@@ -40,6 +42,7 @@ services:
       - ./song-api/files:/song-api/files/
     depends_on:
       - rabbitmq
+    restart: always
   web-app:
     build:
       dockerfile: prod.Dockerfile
@@ -52,6 +55,7 @@ services:
       - 15672:15672
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
+    restart: always
   nginx:
     container_name: nginx
     build: nginx/.
