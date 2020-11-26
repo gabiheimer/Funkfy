@@ -3,6 +3,18 @@ import os
 
 app = Flask(__name__)
 
+@app.route('/songs/<vocals>/<accompaniment>', methods=['GET'])
+def get_song_result(vocals, accompaniment):
+  song = open('/song-api/graphs/' + vocals + accompaniment + '.jpeg', 'rb')
+  return Response(song, mimetype='image/jpeg')
+
+@app.route('/graphs/<vocals>/<accompaniment>', methods=['POST'])
+def receive_song_result(vocals, accompaniment):
+  song = request.data
+  newFile = open("/song-api/graphs/" + vocals + accompaniment + '.jpeg', "wb")
+  newFile.write(song)
+  return('', 201)
+
 @app.route('/songs/<title>', methods=['GET'])
 def get_song(title):
   song = open_song(title, 'song')
@@ -20,7 +32,7 @@ def get_song_accompaniment(title):
 
 @app.route('/songs/<vocals>/<accompaniment>', methods=['GET'])
 def get_song_result(vocals, accompaniment):
-  song = open('/song-api/' + vocals + accompaniment, 'rb')
+  song = open('/song-api/songs/' + vocals + accompaniment, 'rb')
   return Response(song, mimetype='audio/mp3')
 
 @app.route('/songs/<title>', methods=['POST'])
@@ -41,7 +53,7 @@ def receive_song_accompaniment(title):
 @app.route('/songs/<vocals>/<accompaniment>', methods=['POST'])
 def receive_song_result(vocals, accompaniment):
   song = request.data
-  newFile = open("/song-api/" + vocals + accompaniment, "wb")
+  newFile = open("/song-api/songs/" + vocals + accompaniment, "wb")
   newFile.write(song)
   return('', 201)
 
