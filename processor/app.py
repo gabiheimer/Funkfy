@@ -1,4 +1,4 @@
-import pika, sys, os
+import pika, sys, os, json
 import requests
 from graph import plotGraph
 import numpy
@@ -7,7 +7,8 @@ from IPython.display import Audio
 import warnings
 
 # global vars
-baseUrl = 'http://song-api:5060'
+port = ':5060'
+baseUrl = 'song-api'+port
 songType = '.mp3'
 
 def getVocalsUrl(songName):
@@ -20,12 +21,12 @@ def postGraphUrl(vocalsName, beatsName):
     return '/graphs/{}/{}'.format(vocalsName, beatsName)
 
 def getVocals(songName):
-    vocalsUrl = baseUrl + getVocalsUrl(songName) 
+    vocalsUrl = baseUrl + getVocalsUrl(songName)
     response = requests.get(vocalsUrl)
     return response.data
 
 def getBeats(songName):
-    beatsUrl = baseUrl + getBeatsUrl(songName) 
+    beatsUrl = baseUrl + getBeatsUrl(songName)
     response = requests.get(beatsUrl)
     return response.data
 
@@ -53,11 +54,12 @@ def main():
 
     channel.queue_declare(queue='infos')
 
-    def callback(ch, method, properties, body):
-        vocalsName = body.vocals
-        beatsName = body.accompaniment
-        vocalsSpeed = body.vocals_speed
-        beatsSpeed = body.accompaniment_speed
+    def callback(ch, method, properties, bodyStr):
+        body = json.loads(bodyStr)
+        vocalsName = body['vocals']
+        beatsName = body['accompaniment']
+        vocalsSpeed = body['vocal_speed']
+        beatsSpeed = body['accompaniment_speed']
 
         # get song files
         vocals = getVocals(vocalsName)

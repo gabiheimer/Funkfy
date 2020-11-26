@@ -17,7 +17,7 @@ def send_to_songs_api(vocals_path, accompaniment_path, music_name):
     headers = {'content-type': 'audio/mp3'}
     r = requests.post(url, data=data, headers=headers)
 
-def get_music_from_songs_api(PATH_TO_AUDIO, music_name):
+def (PATH_TO_AUDIO, music_name):
     """get entire music from songs api"""
 
     url = f"http://song-api:5065/songs/{music_name}"

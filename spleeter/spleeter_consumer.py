@@ -10,9 +10,10 @@ def start_consumer():
     channel.queue_declare(queue='split')
 
     def callback(ch, method, properties, body):
-      json_as_dict = json.loads(body)
-      process_json(json_as_dict)
-      send_to_info_queue(body)
+        print(body)
+        json_as_dict = json.loads(body)
+        process_json(json_as_dict)
+        send_to_info_queue(body)
     
     channel.basic_consume(queue='split', on_message_callback=callback, auto_ack=True)
     print(' [*] Split Queue is active???')
