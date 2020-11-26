@@ -18,6 +18,9 @@ def send_to_songs_api(vocals_path, accompaniment_path, music_name):
     headers = {'content-type': 'audio/mp3'}
     r = requests.post(url, data=data, headers=headers)
 
+    os.remove(vocals_path)
+    os.remove(accompaniment_path)
+
 def get_music_from_songs_api(PATH_TO_AUDIO, music_name):
     """get entire music from songs api"""
 
@@ -49,6 +52,7 @@ def split_in_two(music_name, stems = 2):
     get_music_from_songs_api(PATH_TO_AUDIO, music_name)
     FINAL_PATH = PATH_TO_AUDIO_OUTPUT + music_name
     os.system('spleeter separate -i '+ PATH_TO_AUDIO + music_name + '.mp3' + ' -p spleeter:' + str(stems) + 'stems -o '+ PATH_TO_AUDIO_OUTPUT)
+    os.remove(PATH_TO_AUDIO + music_name + '.mp3')
     return (FINAL_PATH + '/vocals.wav', FINAL_PATH + '/accompaniment.wav')
 
 def process_json(body):
