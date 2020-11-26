@@ -4,8 +4,6 @@ services:
     build: 
       context: ./api
       dockerfile: zsh.Dockerfile
-    volumes:
-      - ./app:/app
   merge:
     build: 
       context: ./merge
@@ -18,16 +16,12 @@ services:
     build: 
       context: ./processor
       dockerfile: zsh.Dockerfile
-    volumes:
-      - ./processor:/processor
     depends_on:
       - rabbitmq
   spleeter:
     build: 
       context: ./spleeter
       dockerfile: zsh.Dockerfile
-    volumes:
-      - ./spleeter:/spleeter
     depends_on:
       - rabbitmq
   song-api:

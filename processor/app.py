@@ -1,6 +1,6 @@
 import pika, sys, os
 import requests
-from .graph import plotGraph
+from graph import plotGraph
 import numpy
 from scipy.io import wavfile
 from IPython.display import Audio
@@ -96,7 +96,7 @@ def main():
         os.remove(graphFileName)
 
 
-    channel.basic_consume(queue='infos', on_message_callback=callback, auto_ack=True):
+    channel.basic_consume(queue='infos', on_message_callback=callback, auto_ack=True)
         #coisas q vou fazer
 
     print(' [*] Waiting for messages. To exit press CTRL+C')
