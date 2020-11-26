@@ -18,6 +18,8 @@ services:
       dockerfile: zsh.Dockerfile
     depends_on:
       - rabbitmq
+    volumes:
+      - ./processor/graphs:/processor/graphs
     restart: always
   spleeter:
     build: 
