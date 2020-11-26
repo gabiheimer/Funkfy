@@ -110,11 +110,11 @@ export default function App() {
   async function onMerge(){
     await axios.patch('/songs',{
       "vocals": fileVoice[0].name,
-      "vocal_speed": voiceFact,
-      "vocal_volume": decbVoice,
+      "vocal_speed": voiceFact ? voiceFact : 1,
+      "vocal_volume": decbVoice ? decbVoice : 1,
       "accompaniment": fileBeat[0].name,
-      "accompaniment_speed": beatFact,
-      "accompaniment_volume": decbBeat
+      "accompaniment_speed": beatFact? beatFact : 1,
+      "accompaniment_volume": decbBeat? decbBeat : 1
     })
     setPermissionGetMerge(true)
   }
