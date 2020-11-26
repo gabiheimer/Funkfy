@@ -1,74 +1,77 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import './App.css';
 import React, {useState, useEffect} from 'react';
-import { post } from 'axios';
+import axios from 'axios';
 import Lottie from 'react-lottie';
 import NoteMusic from './components/note_music.json'
 
 import Dropzone from 'react-dropzone';
 
-const url = process.env.api;
+
+const isLocalhost = Boolean(
+  window.location.hostname === 'localhost' ||
+    window.location.hostname === '[::1]' ||
+    window.location.hostname.match(
+      /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/,
+    ),
+);
+
+let url = `${window.location.protocol}//${window.location.hostname}:8080`;
+
+url = `${window.location.protocol}//funkfy-api.dikastis.com.br/`;
+
 
 export default function App() {
   const [fileVoice, setFileVoice] = useState(null)
   const [fileBeat, setFileBeat] = useState(null)
 
-  const [returnApi, setReturnAPI] = useState(true)
-  const [returnApiGraphics, setReturnAPIGraphics] = useState(true)
-
-  const [loading, setLoading] = useState(true)
+  const [sendFilesApi, setSendFilesApi] = useState(false)
+  const [returnApiGraphics, setReturnAPIGraphics] = useState(false)
 
   const [askingGraphics, setAskingGraphics] = useState(false)
   const [askingMerge, setAskingMerge] = useState(false)
 
+  async function sendFilesToApi(){
+    const formData = new FormData();
+    formData.append('vocals',fileVoice[0])
+    formData.append('accompaniment',fileBeat[0])
+
+    try {
+      await axios.post(url + '/songs', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      setSendFilesApi(true);
+    } catch (e){
+      console.log(e)
+    }
+  }
+
   useEffect(() => {
     if(fileVoice !== null && fileBeat !== null){
-      const formData = new FormData();
-      formData.append('vocals',fileVoice)
-      formData.append('accompaniment',fileBeat)
-
-      const config = {
-          headers: {
-              'content-type': 'multipart/form-data'
-          }
-      }
-
-      try {
-        post(`${url}/song`, formData, config)
-        setAskingGraphics(true);
-        setAskingMerge(true);
-      } catch (e){
-        console.log(e)
-      }
+      sendFilesToApi();
     }
   },[fileVoice, fileBeat])
 
   async function apiGetGraphics(){
-    const response = await post();
-    return response;
-  }
-
-  async function apiGetMerge(){
-    const response = await post();
+    const response = await axios.get(url + '/graphs/' + fileVoice[0].name + '/' + fileBeat[0].name);
     return response;
   }
 
   useEffect(() => {
-    if(askingGraphics){
-      var poolingGraphics = setInterval(() => {
-        const response = apiGetGraphics();
-        if(response.status === 200) clearInterval(poolingGraphics);
+    if(sendFilesApi){
+      var poolingGraphics = setInterval(async () => {
+        const response = await apiGetGraphics();
+        if(response.status === 200) {
+          clearInterval(poolingGraphics);
+          setReturnAPIGraphics(true);
+          setSendFilesApi(false);
+        }
       }, 3000)
     }
-  }, [askingGraphics])
+  },[sendFilesApi])
 
-  useEffect(() => {
-    if(askingMerge){
-      var poolingMerge = setInterval(() => {
-        const response = apiGetMerge();
-        if(response.status === 200) clearInterval(poolingMerge);
-      }, 3000)
-    }
-  }, [askingMerge])
 
   const defaultOptions = {
     loop: true,
@@ -78,6 +81,76 @@ export default function App() {
       preserveAspectRatio: 'xMidYMid slice'
     },
   };
+
+  const [voiceFact, setVoiceFact] = useState()
+  const [decbVoice, setDecbVoice] = useState()
+  const [beatFact, setBeatFact] = useState()
+  const [decbBeat, setDecbBeat] = useState()
+
+  function onChangeVoiceFactor(event){
+    setVoiceFact(event.target.value);
+  }
+
+  function onChangeBeatFactor(event){
+    setBeatFact(event.target.value);
+  }
+
+  function onChangeVoiceDecb(event){
+    setDecbVoice(event.target.value);
+  }
+
+  function onChangeBeatDecb(event){
+    setDecbBeat(event.target.value);
+  }
+
+  async function onSubmitValues(){
+    await axios.put(url+'/songs',{
+      "vocals": fileVoice[0].name,
+      "vocal_speed": voiceFact,
+      "vocal_volume": decbVoice,
+      "accompaniment": fileBeat[0].name,
+      "accompaniment_speed": beatFact,
+      "accompaniment_volume": decbBeat
+    })
+    setSendFilesApi(true);
+  }
+
+  async function onMerge(){
+    await axios.patch(url+'/songs',{
+      "vocals": fileVoice[0].name,
+      "vocal_speed": voiceFact,
+      "vocal_volume": decbVoice,
+      "accompaniment": fileBeat[0].name,
+      "accompaniment_speed": beatFact,
+      "accompaniment_volume": decbBeat
+    })
+    setPermissionGetMerge(true)
+  }
+  const [permissionGetMerge, setPermissionGetMerge] = useState(false)
+
+  async function apiGetMerge(){
+    const response = await axios.get(url + '/results/' + fileVoice[0].name + '/' + fileBeat[0].name);
+    return response;
+  }
+
+  const [mergeFinished, setMergeFinished] = useState(false)
+  const [urlMerge, setUrlMerge] = useState(null)
+
+  useEffect(() => {
+    if(permissionGetMerge){
+      var poolingGraphics = setInterval(async () => {
+        const response = await apiGetMerge();
+        console.log(response);
+        if(response.status === 200) {
+          clearInterval(poolingGraphics);
+          setPermissionGetMerge(false);
+          setMergeFinished(true)
+          setUrlMerge(response.config.url)
+        }
+      }, 3000)
+    }
+  },[permissionGetMerge])
+
 
   return (
     <div style={{backgroundColor: '#38c172', display: 'flex', flexDirection: 'column', alignItems: 'center', maxHeight: '150vh', minHeight: '100vh'}} className="App">
@@ -129,35 +202,35 @@ export default function App() {
 
       <div style={{minWidth: '70%'}}>
         <h3 style={{textAlign: 'left'}}>Propiedades:</h3>
-        {returnApi === false && (<div>Esperando api para continuar ...</div>)}
-        {returnApi && (
+        {returnApiGraphics === false && (<div>Esperando api para continuar ...</div>)}
+        {returnApiGraphics && (
           <div style={{display: 'flex', flexDirection: 'row', marginLeft: '15%'}}>
             <div style={{width: '50%'}}>
               <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                 <h4 style={{marginRight: '10px'}}>Velocidade da voz: </h4>
-                <input type="number" id="quantity" name="quantity" min="-1000" max="1000"></input>
+                <input type="number" id="quantity" name="quantity" min="-1000" max="1000" value={voiceFact} onChange={event => onChangeVoiceFactor(event)}></input>
               </div>
 
               <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                 <h4 style={{marginRight: '10px'}}>Fator decibéis da voz: </h4>
-                <input type="number" id="quantity" step="0.01" name="quantity" min="-1000" max="1000"></input>
+                <input type="number" id="quantity" step="0.01" name="quantity" min="0" max="10" value={decbVoice} onChange={event => onChangeVoiceDecb(event)}></input>
               </div>
             </div>
 
             <div style={{width: '50%'}}>
               <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                 <h4 style={{marginRight: '10px'}}>Velocidade da batida: </h4>
-                <input type="number" id="quantity" name="quantity" min="-1000" max="1000"></input>
+                <input type="number" id="quantity" name="quantity" min="-1000" max="1000" value={beatFact} onChange={event => onChangeBeatFactor(event)}></input>
               </div>
 
               <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                 <h4 style={{marginRight: '10px'}}>Fator decibéis da batida: </h4>
-                <input type="number" id="quantity" step="0.01" name="quantity" min="-1000" max="1000"></input>
+                <input type="number" id="quantity" step="0.01" name="quantity" min="0" max="10" value={decbBeat} onChange={event => onChangeBeatDecb(event)}></input>
               </div>
             </div>
 
             <div style={{display: 'flex', alignItems: 'flex-end' }}>
-              <button type="button" style={{fontSize: '16px', backgroundColor: '#cccccc', cursor: 'pointer'}}>Aplicar</button>
+              <button type="button" style={{fontSize: '16px', backgroundColor: '#cccccc', cursor: 'pointer'}} onClick={() => onSubmitValues()}>Aplicar</button>
             </div>
           </div>
         )}
@@ -166,13 +239,17 @@ export default function App() {
       <div style={{minWidth: '70%'}}>
         <h3 style={{textAlign: 'left'}}>Gráfico:</h3>
         {returnApiGraphics === false && (<div>Esperando api para continuar ...</div>)}
-        {returnApiGraphics && (<img src="https://static.imasters.com.br/wp-content/uploads/2018/04/HG.jpg" alt="Graphics" width="100%" height="300"></img>)}
+        {returnApiGraphics && (<img key={Date.now()} src={url + '/graphs/' + fileVoice[0].name + '/' + fileBeat[0].name} alt="Graphics" width="100%" height="300"></img>)}
       </div>
             
-      {returnApi && (
+      {returnApiGraphics && (
         <div style={{padding: '30px'}}>
-          <button type="button" style={{fontSize: '24px', backgroundColor: '#f44336', cursor: 'pointer'}}>MERGEEEE!</button>
+          <button type="button" style={{fontSize: '24px', backgroundColor: '#f44336', cursor: 'pointer'}} onClick={() => onMerge()}>MERGEEEE!</button>
         </div>
+      )}
+
+      {mergeFinished &&(
+        <source src={urlMerge} type="audio/mp3"></source>
       )}
     </div>
   );
