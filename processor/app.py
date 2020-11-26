@@ -8,7 +8,7 @@ import warnings
 
 # global vars
 port = ':5060'
-baseUrl = 'song-api'+port
+baseUrl = 'http://song-api'+port
 songType = '.mp3'
 
 def getVocalsUrl(songName):
