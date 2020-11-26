@@ -104,5 +104,7 @@ dist
 # TernJS port file
 .tern-port
 
+# Audio Files
+
 # pycache
 *__pycache__/

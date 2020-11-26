@@ -15,12 +15,12 @@ def main():
     }
 
 
-@app.route("/song", methods=["POST"])
+@app.route("/songs", methods=["POST"])
 def test():
     if request.files and request.files['vocals'] and request.files['accompaniment']:
         vocals = request.files['vocals']
         accompaniment_file = request.files['accompaniment']
-        url = "http://song-api:5060/song"
+        url = "http://song-api:5060/songs"
         files = {'file': open('asdasdad.jog', 'rb')}
         r = requests.post(url, files=request.files, headers=request.headers)
         """
@@ -50,6 +50,20 @@ def test():
     else:
         return ('Invalid files', 400)
     return ''
+
+
+@app.route("/songs", methods=["PUT"])
+def update_songs():
+  connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host='rabbitmq'))
+  channel = connection.channel()
+  channel.queue_declare(queue='infos')
+  data = request.json
+  channel.basic_publish(exchange='', routing_key='infos',
+    body=json.dumps(data))
+  connection.close()
+  return (200)
+
 
 
 @app.route("/song/merge", methods=['PATCH'])
