@@ -5,8 +5,23 @@ app = Flask(__name__)
 
 @app.route('/songs/<title>', methods=['GET'])
 def get_song(title):
-  data = open('/song-api/' + title + '/song.mp3', 'rb')
-  return Response(data, mimetype='audio/mp3')
+  song = open_song(title, 'song')
+  return Response(song, mimetype='audio/mp3')
+
+@app.route('/songs/<title>/vocals', methods=['GET'])
+def get_song(title):
+  song = open_song(title, 'vocals')
+  return Response(song, mimetype='audio/mp3')
+
+@app.route('/songs/<title>/accompaniment', methods=['GET'])
+def get_song(title):
+  song = open_song(title, 'accompaniment')
+  return Response(song, mimetype='audio/mp3')
+
+@app.route('/songs/<title>/result', methods=['GET'])
+def get_song(title):
+  song = open_song(title, 'result')
+  return Response(song, mimetype='audio/mp3')
 
 @app.route('/songs/<title>', methods=['POST'])
 def receive_song(title):
@@ -33,3 +48,6 @@ def save_song(title, part):
   newFile = open("/song-api/" + title + "/" + part + ".mp3", "wb")
   newFile.write(song)
   return('', 201)
+
+def open_song(title, part):
+  return open('/song-api/' + title + '/' + part + '.mp3', 'rb')
