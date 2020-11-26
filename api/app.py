@@ -1,4 +1,5 @@
 from flask import Flask, request, Response
+from flask_cors import CORS
 from pydub import AudioSegment, effects
 import pika
 import json
@@ -6,6 +7,7 @@ import requests
 import os
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route("/")
@@ -16,7 +18,7 @@ def main():
 
 
 @app.route("/songs", methods=["POST"])
-def test():
+def upload_songs():
     if request.files and request.files['vocals'] and request.files['accompaniment']:
         vocals = request.files['vocals']
         accompaniment_file = request.files['accompaniment']
@@ -36,9 +38,8 @@ def test():
             "accompaniment_valume": 1.0
         }
         channel.basic_publish(exchange='', routing_key='split',
-                            body=json.dumps(data))
-        print(vocals.filename.split(".")[0])
-        return('', 201)
+                              body=json.dumps(data))
+        return(vocals.filename.split(".")[0], 201)
     else:
         return ('Invalid files', 400)
 
@@ -53,13 +54,24 @@ def update_songs():
     channel.basic_publish(
         exchange='',
         routing_key='infos',
-        body=json.dumps(data),
-        properties=pika.BasicProperties(
-            delivery_mode=2,  # make message persistent
-        )
+        body=json.dumps(data)
     )
     connection.close()
-    return (200)
+    return (201)
+
+
+@app.route("/graphs", methods=["GET"])
+def get_graph():
+    url = "http://song-api:5065/graphs"  # CHECK URL
+    r = requests.get(url, body=request.body, headers=request.headers)
+    return r
+
+
+@app.route("/result", methods=["get"])
+def get_graph():
+    url = "http://song-api:5065/graphs"  # CHECK URL
+    r = requests.get(url, body=request.body, headers=request.headers)
+    return r
 
 
 @app.route("/song/merge", methods=['PATCH'])
@@ -71,7 +83,7 @@ def audio():
     accompaniment_file = body['accompaniment_file']
     sound1 = AudioSegment.from_file('/app/api/output/' + vocals + vocals_file)
     sound2 = AudioSegment.from_file(
-        '/app/api/output/' + accompaniment + accompaniment_file) - 20
+        '/app/api/output/' + accompaniment + accompaniment_file) - 20+
 
     combined = sound1.overlay(sound2)
 
