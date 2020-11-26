@@ -1,0 +1,73 @@
+version: '3.7'
+services:
+  api:
+    build: 
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - 5020:5020
+  merge:
+    build: 
+      context: ./merge
+      dockerfile: zsh.Dockerfile
+    depends_on:
+      - rabbitmq
+  processor:
+    build: 
+      context: ./processor
+      dockerfile: zsh.Dockerfile
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./processor/graphs:/processor/graphs
+    restart: always
+  spleeter:
+    build: 
+      context: ./spleeter
+      dockerfile: zsh.Dockerfile
+    depends_on:
+      - rabbitmq
+    volumes:
+      - spleeter:/spleeter/pretrained_models
+    restart: always
+  song-api:
+    build: 
+      context: ./song-api
+      dockerfile: zsh.Dockerfile
+    ports:
+      - 5065:5065
+    volumes:
+      - ./song-api/files:/song-api/files/
+    depends_on:
+      - rabbitmq
+  web-app:
+    build:
+      dockerfile: prod.Dockerfile
+      context: ./web-app
+    volumes:
+      - web-app-build:/app/build
+    ports:
+      - 80:3000
+  rabbitmq:
+    image: rabbitmq:3.8-management-alpine
+    ports:
+      - 15672:15672
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+  nginx:
+    container_name: nginx
+    build: nginx/.
+    restart: always
+    volumes:
+      - web-app-build:/app/build
+    ports:
+      - 443:443
+      - 80:80
+    depends_on:
+      - api
+      - web-app
+volumes:
+  rabbitmq-data:
+  song-api:
+  spleeter:
+  web-app-build:
