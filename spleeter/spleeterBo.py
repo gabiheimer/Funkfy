@@ -21,8 +21,7 @@ def get_music_from_songs_api(PATH_TO_AUDIO, music_name):
     """get entire music from songs api"""
 
     url = f"song-api/songs/{music_name}"
-    headers = {'content-type': 'audio/mp3'}
-    r = requests.get(url, data=None, headers=headers)
+    r = requests.get(url, data=None, headers=None)
     
     #TODO: possivel erro abaixo
     file_name = PATH_TO_AUDIO + music_name + '.mp3'
