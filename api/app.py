@@ -56,11 +56,13 @@ def update_songs():
     return (201)
 
 
-@app.route("/graphs", methods=["GET"])
-def get_graph():
-    url = "http://song-api:5065/graphs"  # CHECK URL
-    r = requests.get(url, body=request.body, headers=request.headers)
-    return r
+@app.route("/graphs/<vocals>/<accompaniment>", methods=["GET"])
+def get_graph(vocals, accompaniment):
+    url = "http://song-api:5065/graphs/" + vocals.replace('.mp3', '') + "/" + accompaniment.replace('.mp3', '')  # CHECK URL
+    r = requests.get(url)
+    if r.status_code > 400:
+        return Response('', 404)
+    return r.content
 
 
 @app.route("/result", methods=["get"])

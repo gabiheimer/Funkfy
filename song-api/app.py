@@ -1,18 +1,23 @@
 from flask import Flask, request, Response
 import os
+from pathlib import Path
 
 app = Flask(__name__)
 
 @app.route('/graphs/<vocals>/<accompaniment>', methods=['GET'])
 def get_graphs_result(vocals, accompaniment):
-  song = open('/song-api/files/graphs/' + vocals.replace('.mp3','') + accompaniment + '.png', 'rb')
-  return Response(song, mimetype='image/png')
+  my_file = Path('/song-api/files/graphs/' + vocals.replace('.mp3','') + accompaniment.replace('.mp3','') + '.png')
+  if my_file.is_file():
+    song = open('/song-api/files/graphs/' + vocals.replace('.mp3','') + accompaniment.replace('.mp3','') + '.png', 'rb')
+    return Response(song, mimetype='image/png')
+  else:
+    return Response('', 404)
 
 @app.route('/graphs/<vocals>/<accompaniment>', methods=['POST'])
 def receive_graphs_result(vocals, accompaniment):
   song = request.data
-  os.makedirs(os.path.dirname("/song-api/files/graphs/" + vocals.replace('.mp3','') + accompaniment + '.png'), exist_ok=True)
-  newFile = open("/song-api/files/graphs/" + vocals.replace('.mp3','') + accompaniment + '.png', "wb")
+  os.makedirs(os.path.dirname("/song-api/files/graphs/" + vocals.replace('.mp3','') + accompaniment.replace('.mp3','') + '.png'), exist_ok=True)
+  newFile = open("/song-api/files/graphs/" + vocals.replace('.mp3','') + accompaniment.replace('.mp3','') + '.png', "wb")
   newFile.write(song)
   return('', 201)
 
