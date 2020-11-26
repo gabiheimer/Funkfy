@@ -1,4 +1,4 @@
-from flask import Flask, request, Response
+from flask import Flask, request, Response, send_file
 from flask_cors import CORS
 import pika
 import json
@@ -45,7 +45,6 @@ def update_songs():
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host='rabbitmq'))
     channel = connection.channel()
-    channel.queue_declare(queue='infos', durable=True)
     data = request.json
     channel.basic_publish(
         exchange='',
@@ -53,7 +52,21 @@ def update_songs():
         body=json.dumps(data)
     )
     connection.close()
-    return (201)
+    return Response('',201)
+
+@app.route("/songs", methods=["PATCH"])
+def merge_songs():
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host='rabbitmq'))
+    channel = connection.channel()
+    data = request.json
+    channel.basic_publish(
+        exchange='',
+        routing_key='merge',
+        body=json.dumps(data)
+    )
+    connection.close()
+    return Response('',200)
 
 
 @app.route("/graphs/<vocals>/<accompaniment>", methods=["GET"])
@@ -62,14 +75,16 @@ def get_graph(vocals, accompaniment):
     r = requests.get(url)
     if r.status_code > 400:
         return Response('', 404)
-    return r.content
+    return Response(r.content, mimetype='image/png')
 
 
-@app.route("/result", methods=["get"])
-def get_result():
-    url = "http://song-api:5065/graphs"  # CHECK URL
-    r = requests.get(url, body=request.body, headers=request.headers)
-    return r.content
+@app.route("/results/<vocals>/<accompaniment>", methods=["GET"])
+def get_result(vocals, accompaniment):
+    url = "http://song-api:5065/songs/" + vocals + "/" + accompaniment  # CHECK URL
+    r = requests.get(url)
+    if r.status_code > 400:
+        return Response('', 404)
+    return Response(r.content, mimetype='audio/mp3')
 
 @app.route('/song', methods=['GET'])
 def get_song():
