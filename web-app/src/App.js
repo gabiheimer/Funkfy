@@ -135,7 +135,7 @@ export default function App() {
         if(response.status === 200) {
           clearInterval(poolingGraphics);
           setPermissionGetMerge(false);
-          setUrlMerge(response.config.url);
+          setUrlMerge(response.config.baseURL + response.config.url);
         }
       }, 3000)
     }
