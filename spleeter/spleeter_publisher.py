@@ -8,6 +8,6 @@ def send_to_info_queue(body):
 
     channel.queue_declare(queue='infos')
     data = body
-    channel.basic_publish(exchange='', routing_key='split', body=json.dumps({'data': data})) # TODO: conferir esse dumps, (colocar body=body se der ruim)
+    channel.basic_publish(exchange='', routing_key='infos', body=(data)) # TODO: conferir esse dumps, (colocar body=body se der ruim)
     print(" [x] {body} sent to infos queue")
     connection.close()
