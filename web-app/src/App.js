@@ -7,7 +7,7 @@ import NoteMusic from './components/note_music.json'
 
 import Dropzone from 'react-dropzone';
 
-/*
+
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
     window.location.hostname === '[::1]' ||
@@ -16,13 +16,11 @@ const isLocalhost = Boolean(
     ),
 );
 
-let baseURL = `${window.location.protocol}//${window.location.hostname}:8080`;
+let url = `${window.location.protocol}//${window.location.hostname}:8080`;
 
 if (!isLocalhost) {
-  baseURL = `${window.location.protocol}//funkfy-api.dikastis.com.br/`;
-}*/
-
-const url = 'http://187.21.5.219:5020';
+  url = `${window.location.protocol}//funkfy-api.dikastis.com.br/`;
+}
 
 export default function App() {
   const [fileVoice, setFileVoice] = useState(null)
