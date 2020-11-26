@@ -1,6 +1,7 @@
 import pika, sys, os, json, requests
 import pydub
 import numpy as np
+from pydub import AudioSegment
 
 baseUrl = "http://song-api:5065" 
 
@@ -34,14 +35,15 @@ def read(f, normalized=False):
     else:
         return a.frame_rate, y
 
-def write(sr, x, normalized=False):
+def write(f, sr, x, normalized=False):
     """numpy array to MP3"""
     channels = 2 if (x.ndim == 2 and x.shape[1] == 2) else 1
     if normalized:  # normalized array - each item should be a float in [-1, 1)
         y = np.int16(x * 2 ** 15)
     else:
         y = np.int16(x)
-    return pydub.AudioSegment(y.tobytes(), frame_rate=sr, sample_width=2, channels=channels)
+    song = pydub.AudioSegment(y.tobytes(), frame_rate=sr, sample_width=2, channels=channels)
+    song.export(f, format="mp3", bitrate="320k")
 
 # Salvar música merge
 def merge(ch, method, properties, body):
@@ -63,10 +65,13 @@ def merge(ch, method, properties, body):
 
   vsr, vx = read("/merge/" + vocal_music_name  + ".mp3")
   asr, ax = read("/merge/" + accompaniment_music_name  + ".mp3")
-  song1 = write(int(vsr*vocal_speed), vx)
-  song2 = write(int(asr*accompaniment_speed), ax)
+  song1 = write("/merge/" + vocal_music_name  + ".mp3", int(vsr*float(vocal_speed)), vx)
+  song2 = write("/merge/" + accompaniment_music_name  + ".mp3", int(asr*float(accompaniment_speed)), ax)
 
-  combined = song1.overlay(song2)
+  sound1 =  AudioSegment.from_file("/merge/" + vocal_music_name  + ".mp3") #* float(vocal_volume)
+  sound2 = AudioSegment.from_file("/merge/" + accompaniment_music_name  + ".mp3") #* float(accompaniment_volume)
+
+  combined = sound1.overlay(sound2)
   combined.export('/merge/merged.mp3', format="mp3", bitrate="320k")
 
   print("TALVES ERRO DE PATH AQUI")
