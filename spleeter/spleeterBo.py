@@ -1,5 +1,5 @@
 from pydub import AudioSegment
-import requests, os
+import requests, os, sys
 
 PATH_TO_AUDIO = '/spleeter/audio/'
 PATH_TO_AUDIO_OUTPUT = '/spleeter/audio/output/'
@@ -29,8 +29,9 @@ def get_music_from_songs_api(PATH_TO_AUDIO, music_name):
     #TODO: possivel erro abaixo
     print(" TALVEZ DE ERRO AQUI")
     file_name = PATH_TO_AUDIO + music_name + '.mp3'
+    os.makedirs(os.path.dirname(file_name), exist_ok=True)
     file_obj = open(file_name, 'wb')
-    file_obj.write(r.data)
+    file_obj.write(r.content)
 
 def compress(vocals_path, accompaniment_path):
     """transform wav to mp3"""
@@ -47,8 +48,8 @@ def split_in_two(music_name, stems = 2):
     print("splitting")
     get_music_from_songs_api(PATH_TO_AUDIO, music_name)
     FINAL_PATH = PATH_TO_AUDIO_OUTPUT + music_name
-    os.system('spleeter separate -i '+ PATH_TO_AUDIO + music_name + '.mp3' + ' -p spleeter:' + str(stems) + 'stems -o '+ FINAL_PATH)
-    return (FINAL_PATH + 'vocals.wav', FINAL_PATH + 'accompaniment.wav')
+    os.system('spleeter separate -i '+ PATH_TO_AUDIO + music_name + '.mp3' + ' -p spleeter:' + str(stems) + 'stems -o '+ PATH_TO_AUDIO_OUTPUT)
+    return (FINAL_PATH + '/vocals.wav', FINAL_PATH + '/accompaniment.wav')
 
 def process_json(body):
     """get two musics from songs api, process them and sends the results to songs api"""

@@ -11,7 +11,6 @@ def start_consumer():
 
     def callback(ch, method, properties, body):
         json_as_dict = json.loads(body)
-        print("json ercieved = " + json_as_dict)
         process_json(json_as_dict)
         send_to_info_queue(body)
     
