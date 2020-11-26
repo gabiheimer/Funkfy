@@ -16,6 +16,9 @@ def get_graphs_result(vocals, accompaniment):
 @app.route('/graphs/<vocals>/<accompaniment>', methods=['POST'])
 def receive_graphs_result(vocals, accompaniment):
   song = request.data
+  my_file = Path("/song-api/files/graphs/" + vocals.replace('.mp3','') + accompaniment.replace('.mp3','') + '.png')
+  if my_file.is_file():
+    os.remove("/song-api/files/graphs/" + vocals.replace('.mp3','') + accompaniment.replace('.mp3','') + '.png')
   os.makedirs(os.path.dirname("/song-api/files/graphs/" + vocals.replace('.mp3','') + accompaniment.replace('.mp3','') + '.png'), exist_ok=True)
   newFile = open("/song-api/files/graphs/" + vocals.replace('.mp3','') + accompaniment.replace('.mp3','') + '.png', "wb")
   newFile.write(song)

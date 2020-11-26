@@ -113,7 +113,7 @@ def main():
         postGraph(vocalsName, beatsName)
 
         # delete saved data
-        graphFileName = './graphs/{}-{}'.format(vocalsName, beatsName) + '.png'
+        graphFileName = '/processor/graphs/{}-{}'.format(vocalsName, beatsName) + '.png'
         spedUpVocalsFileName = './spedUpVocals/{}'.format(vocalsName) + songType
         spedUpBeatsFileName = './spedUpBeats/{}'.format(beatsName) + songType
         os.makedirs(os.path.dirname(graphFileName), exist_ok=True)
