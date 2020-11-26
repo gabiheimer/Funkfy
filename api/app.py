@@ -20,50 +20,46 @@ def test():
     if request.files and request.files['vocals'] and request.files['accompaniment']:
         vocals = request.files['vocals']
         accompaniment_file = request.files['accompaniment']
-        url = "http://song-api:5060/songs"
-        files = {'file': open('asdasdad.jog', 'rb')}
+        url = "http://song-api:5065/songs"
         r = requests.post(url, files=request.files, headers=request.headers)
-        """
-        if(vocals.filename != '' and accompaniment_file.filename != ''):
-            vocals.save(vocals.filename)
-            accompaniment_file.save(accompaniment_file.filename)
-            return ('', 201)
-        else:
-            return ('Invalid filenames', 400)
-        """
 
         connection = pika.BlockingConnection(
             pika.ConnectionParameters(host='rabbitmq'))
         channel = connection.channel()
         channel.queue_declare(queue='split')
         data = {
-            "vocals": vocals.filename,
+            "vocals": vocals.filename.split(".")[0],
             "vocal_speed": 1.0,
             "vocal_volume": 1.0,
-            "accompaniment": accompaniment_file.filename,
+            "accompaniment": accompaniment_file.filename.split(".")[0],
             "accompaniment_speed": 1.0,
             "accompaniment_valume": 1.0
         }
         channel.basic_publish(exchange='', routing_key='split',
-                              body=json.dumps(data))
-        connection.close()
+                            body=json.dumps(data))
+        print(vocals.filename.split(".")[0])
+        return('', 201)
     else:
         return ('Invalid files', 400)
-    return ''
 
 
 @app.route("/songs", methods=["PUT"])
 def update_songs():
-  connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host='rabbitmq'))
-  channel = connection.channel()
-  channel.queue_declare(queue='infos')
-  data = request.json
-  channel.basic_publish(exchange='', routing_key='infos',
-    body=json.dumps(data))
-  connection.close()
-  return (200)
-
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host='rabbitmq'))
+    channel = connection.channel()
+    channel.queue_declare(queue='infos', durable=True)
+    data = request.json
+    channel.basic_publish(
+        exchange='',
+        routing_key='infos',
+        body=json.dumps(data),
+        properties=pika.BasicProperties(
+            delivery_mode=2,  # make message persistent
+        )
+    )
+    connection.close()
+    return (200)
 
 
 @app.route("/song/merge", methods=['PATCH'])
