@@ -6,7 +6,7 @@ import requests
 import os
 
 app = Flask(__name__)
-CORS(app)
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 
 @app.route("/", methods=["GET"])
@@ -18,8 +18,15 @@ def upload_songs():
     if request.files and request.files['vocals'] and request.files['accompaniment']:
         vocals = request.files['vocals']
         accompaniment_file = request.files['accompaniment']
+        vocals.save(vocals.filename)
+        accompaniment_file.save(accompaniment_file.filename)
         url = "http://song-api:5065/songs"
-        r = requests.post(url, files=request.files, headers=request.headers)
+        vc = open(vocals.filename, 'rb')
+        ac = open(accompaniment_file.filename, 'rb')
+        r = requests.post(url + "/" + vocals.filename , data=vc)
+        r = requests.post(url + "/" + accompaniment_file.filename, data=ac)
+        os.remove(vocals.filename)
+        os.remove(accompaniment_file.filename)
 
         connection = pika.BlockingConnection(
             pika.ConnectionParameters(host='rabbitmq'))

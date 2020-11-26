@@ -3,7 +3,7 @@ services:
   api:
     build: 
       context: ./api
-      dockerfile: Dockerfile
+      dockerfile: zsh.Dockerfile
     ports:
       - 5020:5020
   merge:

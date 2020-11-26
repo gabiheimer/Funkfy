@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import './App.css';
 import React, {useState, useEffect} from 'react';
-import axios from 'axios';
+import axios from './axios';
 import Lottie from 'react-lottie';
 import NoteMusic from './components/note_music.json'
 
@@ -16,12 +16,6 @@ const isLocalhost = Boolean(
     ),
 );
 
-let url = `${window.location.protocol}//${window.location.hostname}:8080`;
-
-if (!isLocalhost) {
-  url = `${window.location.protocol}//funkfy-api.dikastis.com.br/`;
-}
-
 export default function App() {
   const [fileVoice, setFileVoice] = useState(null)
   const [fileBeat, setFileBeat] = useState(null)
@@ -35,7 +29,7 @@ export default function App() {
     formData.append('accompaniment',fileBeat[0])
 
     try {
-      await axios.post(url + '/songs', formData, {
+      await axios.post('/songs', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -53,7 +47,7 @@ export default function App() {
   },[fileVoice, fileBeat])
 
   async function apiGetGraphics(){
-    const response = await axios.get(url + '/graphs/' + fileVoice[0].name + '/' + fileBeat[0].name);
+    const response = await axios.get('/graphs/' + fileVoice[0].name + '/' + fileBeat[0].name);
     return response;
   }
 
@@ -102,7 +96,7 @@ export default function App() {
   }
 
   async function onSubmitValues(){
-    await axios.put(url+'/songs',{
+    await axios.put('/songs',{
       "vocals": fileVoice[0].name,
       "vocal_speed": voiceFact,
       "vocal_volume": decbVoice,
@@ -114,7 +108,7 @@ export default function App() {
   }
 
   async function onMerge(){
-    await axios.patch(url+'/songs',{
+    await axios.patch('/songs',{
       "vocals": fileVoice[0].name,
       "vocal_speed": voiceFact,
       "vocal_volume": decbVoice,
@@ -127,7 +121,7 @@ export default function App() {
   const [permissionGetMerge, setPermissionGetMerge] = useState(false)
 
   async function apiGetMerge(){
-    const response = await axios.get(url + '/results/' + fileVoice[0].name + '/' + fileBeat[0].name);
+    const response = await axios.get('/results/' + fileVoice[0].name + '/' + fileBeat[0].name);
     return response;
   }
 
@@ -235,7 +229,7 @@ export default function App() {
       <div style={{minWidth: '70%'}}>
         <h3 style={{textAlign: 'left'}}>Gráfico:</h3>
         {returnApiGraphics === false && (<div>Esperando api para continuar ...</div>)}
-        {returnApiGraphics && (<img key={Date.now()} src={url + '/graphs/' + fileVoice[0].name + '/' + fileBeat[0].name} alt="Graphics" width="100%" height="300"></img>)}
+        {returnApiGraphics && (<img key={Date.now()} src={'/graphs/' + fileVoice[0].name + '/' + fileBeat[0].name} alt="Graphics" width="100%" height="300"></img>)}
         {/*returnApiGraphics && (<img src={url + '/graphs/' + fileVoice[0].name + '/' + fileBeat[0].name + '?' + new Date()} alt="Graphics" width="100%" height="300"></img>)*/}
       </div>
             
