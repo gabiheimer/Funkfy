@@ -41,7 +41,7 @@ def get_song_accompaniment(title):
 
 @app.route('/songs/<vocals>/<accompaniment>', methods=['GET'])
 def get_song_result(vocals, accompaniment):
-  song = open('/song-api/files/songs/' + vocals.replace('.mp3','') + accompaniment, 'rb')
+  song = open('/song-api/files/songs/' + vocals.replace('.mp3','') + accompaniment.replace('.mp3',''), 'rb')
   return Response(song, mimetype='audio/mp3')
 
 @app.route('/songs', methods=['POST'])
@@ -69,7 +69,7 @@ def receive_song_accompaniment(title):
 @app.route('/songs/<vocals>/<accompaniment>', methods=['POST'])
 def receive_song_result(vocals, accompaniment):
   song = request.data
-  filename = "/song-api/files/songs/" + vocals.replace('.mp3','') + accompaniment
+  filename = "/song-api/files/songs/" + vocals.replace('.mp3','') + accompaniment.replace('.mp3','')
   os.makedirs(os.path.dirname(filename), exist_ok=True)
   newFile = open(filename, "wb")
   newFile.write(song)
