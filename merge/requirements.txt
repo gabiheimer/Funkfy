@@ -1,1 +1,7 @@
 pika==1.1.0
+requests==2.24.0
+pydub==0.24.1
+matplotlib==3.3.3
+librosa==0.8.0
+IPython==7.19.0
+scipy==1.5.4
