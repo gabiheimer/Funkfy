@@ -25,6 +25,8 @@ services:
       dockerfile: zsh.Dockerfile
     depends_on:
       - rabbitmq
+    volumes:
+      - spleeter:/spleeter/pretrained_models
     restart: always
   song-api:
     build: 
@@ -45,3 +47,4 @@ services:
 volumes:
   rabbitmq-data:
   song-api:
+  spleeter:
