@@ -7,7 +7,7 @@ import NoteMusic from './components/note_music.json'
 
 import Dropzone from 'react-dropzone';
 
-
+/*
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
     window.location.hostname === '[::1]' ||
@@ -16,10 +16,13 @@ const isLocalhost = Boolean(
     ),
 );
 
-let url = `${window.location.protocol}//${window.location.hostname}:8080`;
+let baseURL = `${window.location.protocol}//${window.location.hostname}:8080`;
 
-url = `${window.location.protocol}//funkfy-api.dikastis.com.br/`;
+if (!isLocalhost) {
+  baseURL = `${window.location.protocol}//funkfy-api.dikastis.com.br/`;
+}*/
 
+const url = 'http://187.21.5.219:5020';
 
 export default function App() {
   const [fileVoice, setFileVoice] = useState(null)
@@ -27,9 +30,6 @@ export default function App() {
 
   const [sendFilesApi, setSendFilesApi] = useState(false)
   const [returnApiGraphics, setReturnAPIGraphics] = useState(false)
-
-  const [askingGraphics, setAskingGraphics] = useState(false)
-  const [askingMerge, setAskingMerge] = useState(false)
 
   async function sendFilesToApi(){
     const formData = new FormData();
@@ -133,7 +133,6 @@ export default function App() {
     return response;
   }
 
-  const [mergeFinished, setMergeFinished] = useState(false)
   const [urlMerge, setUrlMerge] = useState(null)
 
   useEffect(() => {
@@ -144,8 +143,7 @@ export default function App() {
         if(response.status === 200) {
           clearInterval(poolingGraphics);
           setPermissionGetMerge(false);
-          setMergeFinished(true)
-          setUrlMerge(response.config.url)
+          setUrlMerge(response.config.url);
         }
       }, 3000)
     }
@@ -240,6 +238,7 @@ export default function App() {
         <h3 style={{textAlign: 'left'}}>Gráfico:</h3>
         {returnApiGraphics === false && (<div>Esperando api para continuar ...</div>)}
         {returnApiGraphics && (<img key={Date.now()} src={url + '/graphs/' + fileVoice[0].name + '/' + fileBeat[0].name} alt="Graphics" width="100%" height="300"></img>)}
+        {/*returnApiGraphics && (<img src={url + '/graphs/' + fileVoice[0].name + '/' + fileBeat[0].name + '?' + new Date()} alt="Graphics" width="100%" height="300"></img>)*/}
       </div>
             
       {returnApiGraphics && (
@@ -248,8 +247,10 @@ export default function App() {
         </div>
       )}
 
-      {mergeFinished &&(
-        <source src={urlMerge} type="audio/mp3"></source>
+      {urlMerge !== null &&(
+        <audio controls>
+          <source src={urlMerge} type="audio/mp3"></source>
+        </audio>
       )}
     </div>
   );
