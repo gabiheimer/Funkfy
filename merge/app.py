@@ -65,11 +65,11 @@ def merge(ch, method, properties, body):
 
   vsr, vx = read("/merge/" + vocal_music_name  + ".mp3")
   asr, ax = read("/merge/" + accompaniment_music_name  + ".mp3")
-  song1 = write("/merge/" + vocal_music_name  + ".mp3", int(vsr*float(vocal_speed)), vx)
-  song2 = write("/merge/" + accompaniment_music_name  + ".mp3", int(asr*float(accompaniment_speed)), ax)
+  write("/merge/" + vocal_music_name  + ".mp3", int(vsr*float(vocal_speed)), vx)
+  write("/merge/" + accompaniment_music_name  + ".mp3", int(asr*float(accompaniment_speed)), ax)   
 
-  sound1 =  AudioSegment.from_file("/merge/" + vocal_music_name  + ".mp3") #* float(vocal_volume)
-  sound2 = AudioSegment.from_file("/merge/" + accompaniment_music_name  + ".mp3") #* float(accompaniment_volume)
+  sound1 =  AudioSegment.from_file("/merge/" + vocal_music_name  + ".mp3") + float(vocal_volume)
+  sound2 = AudioSegment.from_file("/merge/" + accompaniment_music_name  + ".mp3") + float(accompaniment_volume)
 
   combined = sound1.overlay(sound2)
   combined.export('/merge/merged.mp3', format="mp3", bitrate="320k")
