@@ -10,8 +10,6 @@ services:
     build: 
       context: ./merge
       dockerfile: zsh.Dockerfile
-    volumes:
-      - ./merge:/merge
     depends_on:
       - rabbitmq
   processor:

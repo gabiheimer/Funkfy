@@ -1,10 +1,6 @@
-from flask import Flask, request, Response
-import pika, sys, os
+import pika, sys, os, json
 
-app = Flask(__name__)
-
-port = 5080
-baseUrl = "http://song-api/" 
+baseUrl = "http://song-api:5065/" 
 
 def get_vocal_url():
   return baseUrl+ "songs/:nomeDaMusica/vocals/"+port
@@ -36,26 +32,25 @@ def audio():
   }
 
 def main():
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq'))
-    channel = connection.channel()
+  connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq'))
+  channel = connection.channel()
+  channel.queue_declare(queue='merge')
 
-    channel.queue_declare(queue='split')
+  def callback(ch, method, properties, body):
+    oi = json.loads(body)
+    vocals_file = oi['vocals']
+    vocal_speed = oi['vocal_speed']
+    vocal_volume = oi['vocal_volume']
+    accompaniment_file = oi['accompaniment']
+    accompaniment_speed = oi['accompaniment_speed']
+    accompaniment_volume = oi['accompaniment_volume']
 
-    def callback(ch, method, properties, body):
-      newFile = open("request.mp3", "wb")
-      newFile.write(body["vocals"])
+  channel.basic_consume(queue='merge', on_message_callback=callback, auto_ack=True)
 
-    channel.basic_consume(queue='split', on_message_callback=callback, auto_ack=True)
-
-    print(' [*] Waiting for messages. To exit press CTRL+C')
-    channel.start_consuming()
+  print(' [*] Waiting for messages. To exit press CTRL+C')
+  channel.start_consuming()
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        print('Interrupted')
-        try:
-            sys.exit(0)
-        except SystemExit:
-            os._exit(0)
+  print('hai')
+  main()
+print('oi', __name__)
